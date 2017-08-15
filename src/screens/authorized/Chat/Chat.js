@@ -27,7 +27,7 @@ class Chat extends Component {
                 <TouchableOpacity
                     onPress={() => {
                         Keyboard.dismiss();
-                        navigation.navigate('Manhinh_audioCall', {type: 'caller'})
+                        navigation.navigate('VideoCall', {type: 'caller', content: 'audioCall'})
                     }}
                 >
                     <Image source={icon_phoneCall} style={{width: 22, height: 22, marginRight: 15}}/>
@@ -35,7 +35,7 @@ class Chat extends Component {
                 <TouchableOpacity
                     onPress={() => {
                         Keyboard.dismiss();
-                        navigation.navigate('VideoCall', {type: 'caller'})
+                        navigation.navigate('VideoCall', {type: 'caller', content: 'videoCall'})
                     }}
                 >
                     <Image source={icon_videoCall} style={{width: 25, height: 25, marginRight: 20}}/>

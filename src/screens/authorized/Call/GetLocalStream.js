@@ -4,50 +4,51 @@ import {
     getUserMedia,
 } from 'react-native-webrtc';
 
-const GetLocalStream = (isFront, qual, callback) => {
+const function GetLocalStream(isFront, video, callback) {
 
-    let videoSourceId;
-    // on android, you don't have to specify sourceId manually, just use facingMode
-    // uncomment it if you want to specify
-    if (Platform.OS === 'ios') {
-        MediaStreamTrack.getSources(sourceInfos => {
-            console.log("sourceInfos: ", sourceInfos);
-            for (let i = 0; i < sourceInfos.length; i++) {
-                const sourceInfo = sourceInfos[i];
-                if (sourceInfo.kind === "video" && sourceInfo.facing === (isFront ? "front" : "back")) {
-                    videoSourceId = sourceInfo.id;
-                }
-            }
-        });
-    }
+  let videoSourceId;
 
-    let minWidth, minHeight, minFrameRate;
-    if (qual === 'low') {
-        minWidth = 640;
-        minHeight = 360;
-        minFrameRate = 30;
-    }
-    else {
-        minWidth = 1080;
-        minHeight = 720;
-        minFrameRate = 50;
-    }
+  // on android, you don't have to specify sourceId manually, just use facingMode
+  // uncomment it if you want to specify
+  if (Platform.OS === 'ios') {
+    MediaStreamTrack.getSources(sourceInfos => {
+      console.log("sourceInfos: ", sourceInfos);
 
-    getUserMedia({
+      for (const i = 0; i < sourceInfos.length; i++) {
+        const sourceInfo = sourceInfos[i];
+        if(sourceInfo.kind == "video" && sourceInfo.facing == (isFront ? "front" : "back")) {
+          videoSourceId = sourceInfo.id;
+        }
+      }
+    });
+  }
+
+  if(video) {
+      getUserMedia({
         audio: true,
         video: {
-            mandatory: {
-                minWidth: minWidth, // Provide your own width, height and frame rate here
-                minHeight: minHeight,
-                minFrameRate: minFrameRate,
-            },
-            facingMode: (isFront ? "user" : "environment"),
-            optional: (videoSourceId ? [{sourceId: videoSourceId}] : []),
+          mandatory: {
+            minWidth: 1080, // Provide your own width, height and frame rate here
+            minHeight: 720,
+            minFrameRate: 50,
+          },
+          facingMode: (isFront ? "user" : "environment"),
+          optional: (videoSourceId ? [{sourceId: videoSourceId}] : []),
         }
-    }, function (stream) {
+      }, function (stream) {
         console.log('getUserMedia success', stream);
         callback(stream);
-    }, logError);
+      }, logError);
+  }
+  else {
+      getUserMedia({
+        audio: true,
+        video: false,
+      }, function (stream) {
+        console.log('getUserMedia success', stream);
+        callback(stream);
+      }, logError);
+  }
 };
 
 function logError(error) {

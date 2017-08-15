@@ -65,6 +65,12 @@ class VideoCall extends Component {
         });
         con.accept = null;
         con.isOffer = false;
+        if(this.props.navigation.state.params.content === 'videoCall') {
+            con.video = true;
+        }
+        else if (this.props.navigation.state.params.content === 'audioCall') {
+            con.video = false;
+        }
         InCallManager.setForceSpeakerphoneOn(true);
         InCallManager.start({media: 'audio'});
         DeviceEventEmitter.addListener('WiredHeadset', (data) => {
@@ -101,9 +107,16 @@ class VideoCall extends Component {
         }
 
         if (con.props.navigation.state.params.type === 'caller') {
-            con.socket.emit('incomingCall', {
-                type: 'videoCall',
-            });
+            if(con.video) {
+                con.socket.emit('incomingCall', {
+                    type: 'videoCall',
+                });
+            }
+            else {
+                con.socket.emit('incomingCall', {
+                    type: 'audioCall',
+                });
+            }
             con.socket.on('incomingAns', (data) => {
                 if (data.content === 'accept') {
                     if (!con.isOffer) {
@@ -133,6 +146,7 @@ class VideoCall extends Component {
         }
     }
 
+    //
     componentWillUnmount() {
         if (!con.state.frontCamera) {
             localStream.getVideoTracks().forEach(videoTracks => videoTracks._switchCamera());

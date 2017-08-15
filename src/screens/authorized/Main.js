@@ -21,9 +21,18 @@ class Main extends Component {
 
     componentDidMount() {
         this.props.socket.on('incomingCall', () => {
-            this.props.navigation.navigate('VideoCall', {
-                type: 'callee',
-            })
+            if(data.type === 'videoCall') {
+                this.props.navigation.navigate('VideoCall', {
+                    type: 'callee',
+                    content: 'videoCall',
+                })
+            }
+            else if(data.type === 'audioCall') {
+                this.props.navigation.navigate('VideoCall', {
+                    type: 'callee',
+                    content: 'videoCall',
+                })
+            }
         })
     }
 

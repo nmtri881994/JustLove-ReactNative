@@ -1,0 +1,163 @@
+/* 1 */
+{
+  "_id": ObjectId(
+  "59888b6e64e9e60650c1cbd5"
+  ),
+  "targetId": {
+    "targetId": "598ab4a3867953102c54bf04",
+    "status": "accepted",
+    "_id": ObjectId(
+    "59888b6e64e9e60650c1cbd6"
+    ),
+    "isBlocked": false
+  },
+  "created_at": "Mon Aug 07 2017 22:46:54 GMT+0700 (SE Asia Standard Time)",
+  "enable": true,
+  "BlockedByFriend": null,
+  "socketID": "6sXx3HOHeIRDgxCsAAAA",
+  "gender": null,
+  "birthday": "",
+  "isOnline": true,
+  "isVerified": true,
+  "googleID": null,
+  "facebookID": null,
+  "avatar": "https://lh3.googleusercontent.com/-Y86IN-vEObo/AAAAAAAAAAI/AAAAAAAKyAM/6bec6LqLXXA/s640/photo.jpg",
+  "displayName": "Minh Nam",
+  "lastName": "Nam",
+  "firstName": "Minh",
+  "password": "$2a$10$luBcuwrPgDwZNl.DgXrFj.spEtQW2V70fORtWCvZE1BRY84sJW6Z6",
+  "phone_number": "1234567890",
+  "__v": 0
+}
+
+/* 2 */
+{
+  "_id": ObjectId(
+  "5988945764e9e60650c1cbe0"
+  ),
+  "targetId": {
+    "targetId": null,
+    "status": null,
+    "_id": ObjectId(
+    "5988945764e9e60650c1cbe1"
+    ),
+    "isBlocked": false
+  },
+  "created_at": "Mon Aug 07 2017 23:24:55 GMT+0700 (SE Asia Standard Time)",
+  "enable": true,
+  "BlockedByFriend": null,
+  "socketID": null,
+  "gender": null,
+  "birthday": null,
+  "isOnline": false,
+  "isVerified": false,
+  "googleID": null,
+  "facebookID": null,
+  "avatar": null,
+  "displayName": "Minh Phan",
+  "lastName": "Phan",
+  "firstName": "Minh",
+  "password": "$2a$10$TXVEXLJkRiJamm6GTsdgIe2Zhc/uivsmphurUG90aC1DvfyACXo1G",
+  "phone_number": "1234567809",
+  "email": null,
+  "__v": 0
+}
+
+/* 3 */
+{
+  "_id": ObjectId(
+  "59889483e2b0f61cb866da04"
+  ),
+  "targetId": {
+    "targetId": null,
+    "status": null,
+    "_id": ObjectId(
+    "59889483e2b0f61cb866da05"
+    ),
+    "isBlocked": false
+  },
+  "created_at": "Mon Aug 07 2017 23:25:39 GMT+0700 (SE Asia Standard Time)",
+  "enable": true,
+  "BlockedByFriend": null,
+  "socketID": null,
+  "gender": null,
+  "birthday": null,
+  "isOnline": false,
+  "isVerified": false,
+  "googleID": null,
+  "facebookID": null,
+  "avatar": null,
+  "displayName": "Lan Anh",
+  "lastName": "Anh",
+  "firstName": "Lan",
+  "password": "$2a$10$w0.a8x2SlNigvnm03w7EP.t9I0ViNpu4hGOkD.nDIcAJr2kijPEqy",
+  "phone_number": "1231231234",
+  "email": null,
+  "__v": 0
+}
+
+/* 4 */
+{
+  "_id": ObjectId(
+  "598ab4a3867953102c54bf04"
+  ),
+  "targetId": {
+    "status": "accepted",
+    "targetId": "59888b6e64e9e60650c1cbd5",
+    "_id": ObjectId(
+    "598b0ac3e2463a14b4870244"
+    ),
+    "isBlocked": false
+  },
+  "created_at": "Wed Aug 09 2017 14:07:15 GMT+0700 (SE Asia Standard Time)",
+  "enable": true,
+  "BlockedByFriend": null,
+  "socketID": "tDDTU5fly1mW4VaFAAAB",
+  "gender": null,
+  "birthday": null,
+  "isOnline": true,
+  "isVerified": true,
+  "googleID": null,
+  "facebookID": null,
+  "avatar": "https://pbs.twimg.com/profile_images/782474226020200448/zDo-gAo0_400x400.jpg",
+  "displayName": "Hang Mai",
+  "lastName": "Mai",
+  "firstName": "Hang",
+  "password": "$2a$10$aXa1GHjoFwLYGhBjOl8t5ud3xCIztaQlZRcNKIDBOs/KIZtcJUgFS",
+  "phone_number": "123123123123",
+  "email": null,
+  "__v": 0
+}
+
+/* 5 */
+{
+  "_id": ObjectId(
+  "598abcd2cbfd6c16d4af90ec"
+  ),
+  "targetId": {
+    "targetId": null,
+    "status": null,
+    "_id": ObjectId(
+    "598abcd2cbfd6c16d4af90ed"
+    ),
+    "isBlocked": false
+  },
+  "created_at": "Wed Aug 09 2017 14:42:10 GMT+0700 (SE Asia Standard Time)",
+  "enable": true,
+  "BlockedByFriend": null,
+  "socketID": null,
+  "gender": null,
+  "birthday": null,
+  "isOnline": false,
+  "isVerified": false,
+  "googleID": null,
+  "facebookID": null,
+  "avatar": null,
+  "displayName": "Nhat Tu",
+  "lastName": "Tu",
+  "firstName": "Nhat",
+  "password": "$2a$10$nj4nktHf8tjn1hz1gzhwSu/m26DVKwXnsqD0BuhaIH8EFwv2zyxVq",
+  "phone_number": "12345678909",
+  "email": null,
+  "__v": 0
+}

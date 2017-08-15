@@ -133,7 +133,6 @@ class VideoCall extends Component {
         }
     }
 
-    //
     componentWillUnmount() {
         if (!con.state.frontCamera) {
             localStream.getVideoTracks().forEach(videoTracks => videoTracks._switchCamera());

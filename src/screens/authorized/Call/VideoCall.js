@@ -39,7 +39,6 @@ class VideoCall extends Component {
             remoteId: this.props.user.target.targetId,
             frontCamera: true,
             mute: false,
-            quality: 'high',
             modalVisible: this.props.navigation.state.params.type !== 'caller',
             modalCallerVisible: this.props.navigation.state.params.type === 'caller',
         };
@@ -170,7 +169,7 @@ class VideoCall extends Component {
 
     createPC() {
         console.log('createPC');
-        GetLocalStream(true, con.state.qual, (stream) => {
+        GetLocalStream(true, con.video, (stream) => {
             localStream = stream;
             con.setState({localVideo: stream.toURL()});
             pc = new RTCPeerConnection(configuration);

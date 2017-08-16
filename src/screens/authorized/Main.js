@@ -30,7 +30,7 @@ class Main extends Component {
             else if (data.type === 'audioCall') {
                 this.props.navigation.navigate('VideoCall', {
                     type: 'callee',
-                    content: 'videoCall',
+                    content: 'audioCall',
                 })
             }
         })

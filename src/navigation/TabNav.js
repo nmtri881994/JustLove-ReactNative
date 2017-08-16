@@ -1,6 +1,7 @@
 /**
  * Created by minhphan on 7/24/2017.
  */
+import React from 'react';
 import {Dimensions} from 'react-native';
 import {TabNavigator, NavigationActions} from 'react-navigation';
 import Home from '../screens/authorized/Home';
@@ -11,6 +12,7 @@ import Location from '../screens/authorized/Location';
 
 const {width, height} = Dimensions.get('window');
 
+let navigate;
 
 export default MainTabNav = TabNavigator({
         HomeScreen: {
@@ -21,9 +23,9 @@ export default MainTabNav = TabNavigator({
         },
         ChatScreen: {
             screen: ChatScreen,
-            navigationOptions: ({navigation}) => ({
+            navigationOptions: {
                 tabBarLabel: 'Chat',
-            }),
+            },
 
         },
         MemoriesScreen: {
@@ -39,9 +41,10 @@ export default MainTabNav = TabNavigator({
             }
         }
     }, {
+        // navigationOptions: ({navigation}) => {
+        //     navigate = navigation
+        // },
         tabBarOptions: {
-
-            // onTabPress:() => {}
             style: {
                 height: height / 20,
                 backgroundColor: '#7E007E',
@@ -53,8 +56,17 @@ export default MainTabNav = TabNavigator({
             },
             activeTintColor: '#fff',
             inactiveTintColor: '#AFEAF2',
-            showLabel: true
+            showLabel: true,
+            // onTabPress: (tab) => {
+            //     console.log('Tab', tab);
+            //     if (tab.route.routeName === 'ChatScreen') {
+            //         console.log('Hello');
+            //         let nav = NavigationActions.navigate({routeName: 'Chat'});
+            //         navigate.dispatch(nav);
+            //     }
+            // }
         },
         swipeEnabled: true,
+
     }
 );

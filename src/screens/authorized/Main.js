@@ -6,7 +6,7 @@ import {
 import Header from "../../components/Header";
 import TabNav from '../../navigation/TabNav';
 import {connect} from 'react-redux';
-
+import {NavigationActions} from 'react-navigation'
 const {width, height} = Dimensions.get('window');
 
 
@@ -21,13 +21,13 @@ class Main extends Component {
 
     componentDidMount() {
         this.props.socket.on('incomingCall', () => {
-            if(data.type === 'videoCall') {
+            if (data.type === 'videoCall') {
                 this.props.navigation.navigate('VideoCall', {
                     type: 'callee',
                     content: 'videoCall',
                 })
             }
-            else if(data.type === 'audioCall') {
+            else if (data.type === 'audioCall') {
                 this.props.navigation.navigate('VideoCall', {
                     type: 'callee',
                     content: 'videoCall',
@@ -45,7 +45,14 @@ class Main extends Component {
                 </View>
                 <View style={container}>
                     <TabNav
-                        screenProps={{navigate: this.props.navigation.navigate}}/>
+                        screenProps={{navigate: this.props.navigation.navigate}}
+                        onNavigationStateChange={(prevState, nextState) => {
+                            console.log('_newState', nextState.index);
+                            if (nextState.index === 1) {
+                                this.props.navigation.navigate('Chat')
+                            }
+                        }}
+                    />
                 </View>
 
             </View>

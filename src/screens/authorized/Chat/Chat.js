@@ -6,13 +6,17 @@ import {
 import {connect} from 'react-redux';
 import {GiftedChat} from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';
+import ImagePicker from 'react-native-image-picker';
 import EmojiPicker from './emojiPicker'
 import GifyPicker from './Gify'
 import uuid from 'uuid';
+
 import icon_videoCall from '../../../media/icons/icon_videoCall.png';
 import icon_phoneCall from '../../../media/icons/icon_phoneCall.png';
 import dot_white from '../../../media/icons/dot_white.png';
-import ImagePicker from 'react-native-image-picker';
+import icon_Typing from '../../../media/icons/typing.gif';
+import icon_back from '../../../media/icons/icon_back_black.png';
+
 
 class Chat extends Component {
 
@@ -27,7 +31,7 @@ class Chat extends Component {
                 <TouchableOpacity
                     onPress={() => {
                         Keyboard.dismiss();
-                        navigation.navigate('Manhinh_audioCall', {type: 'caller'})
+                        navigation.navigate('VideoCall', {type: 'caller'})
                     }}
                 >
                     <Image source={icon_phoneCall} style={{width: 22, height: 22, marginRight: 15}}/>
@@ -41,6 +45,13 @@ class Chat extends Component {
                     <Image source={icon_videoCall} style={{width: 25, height: 25, marginRight: 20}}/>
                 </TouchableOpacity>
             </View>
+        ),
+        headerLeft: (
+            <TouchableOpacity
+                onPress={() => navigation.navigate('AuthenStackNav')}
+            >
+                <Image source={icon_back} style={{height: 20, width: 20, marginLeft: 15}}/>
+            </TouchableOpacity>
         )
     });
 
@@ -63,7 +74,6 @@ class Chat extends Component {
         this.renderChatFooterCustom = this.renderChatFooterCustom.bind(this);
         this.renderFooter = this.renderFooter.bind(this);
         this.onLoadEarlier = this.onLoadEarlier.bind(this);
-        // this.renderCustomActions = this.renderCustomActions.bind(this);
         this.socket.removeListener('ReceiveMessage');
         this.socket.removeListener('LoadMessages');
         this.socket.on('ReceiveMessage', this.onReceivedMessage);
@@ -97,12 +107,13 @@ class Chat extends Component {
 
     componentWillUnmount() {
         this._isMounted = false;
-        this.socket.emit('isTyping', {
+        this.socket.emit('IsTyping', {
             isTyping: false,
         });
         Keyboard.dismiss();
         this.keyboardDidShowListener.remove();
-        this.socket.removeListener('isTyping');
+        this.socket.removeListener('IsTyping');
+        //   this.props.navigation.navigate('AuthenStackNav')
     }
 
     LoadMessages(existingMessages) {
@@ -145,30 +156,6 @@ class Chat extends Component {
         this.setState({text: ''});
     }
 
-    // renderCustomActions(props) {
-    //     const emoji = () => {
-    //         Keyboard.dismiss();
-    //         if (this.state.gify) {
-    //             this.setState({gify: !this.state.gify});
-    //         }
-    //         this.setState({emoji: !this.state.emoji});
-    //     };
-    //     const gify = () => {
-    //         Keyboard.dismiss();
-    //         if (this.state.emoji) {
-    //             this.setState({emoji: !this.state.emoji});
-    //         }
-    //         this.setState({gify: !this.state.gify});
-    //     };
-    //     return (
-    //         <CustomActions
-    //             {...props}
-    //             emoji={emoji}
-    //             gify={gify}
-    //         />
-    //     );
-    // }
-
     onInputTextChanged(txt) {
         this.setState({text: txt});
         if (txt !== '' && !this.isTypingState) {
@@ -179,7 +166,7 @@ class Chat extends Component {
         }
         if (txt === '') {
             this.isTypingState = false;
-            this.socket.emit('isTyping', {
+            this.socket.emit('IsTyping', {
                 isTyping: false,
             });
         }
@@ -189,10 +176,20 @@ class Chat extends Component {
         console.log('isTyping', this.state.isTyping);
         if (this.state.isTyping) {
             return (
-                <View style={{marginTop: 5, marginLeft: 10, marginRight: 10, marginBottom: 10, alignItems: 'center'}}>
-                    <Text style={{fontSize: 14,}}>
-                        Your love is typing . . .
-                    </Text>
+                <View style={{flexDirection: 'row'}}>
+                    <Image
+                        style={{
+                            marginHorizontal: 8,
+                            marginBottom: 15,
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            width: 40,
+                            height: 40,
+                            borderRadius: 20
+                        }}
+                        source={{uri: this.props.target.avatar}}
+                    />
+                    <Image source={icon_Typing} style={{height: 40, width: 60}}/>
                 </View>
             );
         }
@@ -302,6 +299,11 @@ class Chat extends Component {
     render() {
 
         const {user} = this.props;
+        let userChat = {
+            _id: user._id,
+            name: user.displayName,
+            avatar: user.avatar
+        };
 
         let displayemoji = this.state.emoji ?
             <EmojiPicker
@@ -323,16 +325,15 @@ class Chat extends Component {
                     text={this.state.text}
                     messages={this.state.messages}
                     onSend={this.onSend}
-                    user={user}
+                    user={userChat}
                     loadEarlier={this.state.loadEarlier}
                     onLoadEarlier={this.onLoadEarlier}
                     isLoadingEarlier={this.state.isLoadingEarlier}
-                    // renderActions={this.renderCustomActions}
                     onInputTextChanged={this.onInputTextChanged}
                     renderChatFooter={this.renderChatFooterCustom}
                     renderFooter={this.renderFooter}
-                    renderBubble={this.renderBubble}
                     keyboardShouldPersistTaps={'never'}
+                    showUserAvatar={true}
                 />
                 {displayemoji}
                 {displaygify}

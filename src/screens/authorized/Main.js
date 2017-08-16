@@ -54,7 +54,6 @@ class Main extends Component {
                         }}
                     />
                 </View>
-
             </View>
         );
     }

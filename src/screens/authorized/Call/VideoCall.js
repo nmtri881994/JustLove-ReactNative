@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {
     StyleSheet, Text, TouchableOpacity, View, Image,
     TextInput, ListView, Platform, Modal, DeviceEventEmitter,
-    Dimensions
+    Dimensions, AppState,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {connect} from 'react-redux';
@@ -41,6 +41,7 @@ class VideoCall extends Component {
             mute: false,
             modalVisible: this.props.navigation.state.params.type !== 'caller',
             modalCallerVisible: this.props.navigation.state.params.type === 'caller',
+            appState: AppState.currentState,
         };
         con = this;
         con.socket = this.props.socket;
@@ -143,7 +144,15 @@ class VideoCall extends Component {
                 }
             }, 10000)
         }
-    }
+        AppState.addEventListener('change', (nextAppState) => {
+            if (this.state.appState.match(/active/) && (nextAppState === 'background' || nextAppState === 'inactive')) {
+                con.socket.emit('data', {
+                    type: 'leave',
+                });
+                con.handleLeave();
+            }
+            this.setState({appState: nextAppState});
+        });
 
     //
     componentWillUnmount() {
@@ -165,6 +174,7 @@ class VideoCall extends Component {
         //------------------------------------------------
         con.socket.removeListener('data');
         con.socket.removeListener('incomingAns');
+        AppState.removeEventListener('change');
     };
 
     createPC() {

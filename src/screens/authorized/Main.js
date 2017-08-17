@@ -12,7 +12,8 @@ const {width, height} = Dimensions.get('window');
 
 class Main extends Component {
     static navigationOptions = {
-        header: null
+        header: null,
+        drawer: null
     };
 
     componentWillMount() {
@@ -20,7 +21,7 @@ class Main extends Component {
     }
 
     componentDidMount() {
-        this.props.socket.on('incomingCall', () => {
+        this.props.socket.on('incomingCall', (data) => {
             if (data.type === 'videoCall') {
                 this.props.navigation.navigate('VideoCall', {
                     type: 'callee',
@@ -41,15 +42,16 @@ class Main extends Component {
         return (
             <View style={wrapper}>
                 <View style={header}>
-                    <Header/>
+                    <Header navigation={this.props.navigation}/>
                 </View>
                 <View style={container}>
                     <TabNav
                         screenProps={{navigate: this.props.navigation.navigate}}
                         onNavigationStateChange={(prevState, nextState) => {
-                            console.log('_newState', nextState.index);
+                            // console.log('_newState', nextState.index);
+                            // console.log('_lstState', prevState);
                             if (nextState.index === 1) {
-                                this.props.navigation.navigate('Chat')
+                                this.props.navigation.navigate('ChatScreen', {lastScreenIndex: prevState.index})
                             }
                         }}
                     />

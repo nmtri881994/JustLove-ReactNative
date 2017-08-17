@@ -1,13 +1,13 @@
 import React, {Component} from 'react';
 import {
-    View, Text, InteractionManager, TouchableOpacity,
+    View, InteractionManager, TouchableOpacity,
     Keyboard, Image
 } from 'react-native';
 import {connect} from 'react-redux';
 import {GiftedChat} from 'react-native-gifted-chat';
 import CustomActions from './CustomActions';
 import ImagePicker from 'react-native-image-picker';
-import EmojiPicker from './emojiPicker'
+import EmojiPicker from './EmojiPicker'
 import GifyPicker from './Gify'
 import uuid from 'uuid';
 
@@ -18,7 +18,7 @@ import icon_Typing from '../../../media/icons/typing.gif';
 import icon_back from '../../../media/icons/icon_back_black.png';
 
 
-class Chat extends Component {
+class ChatScreen extends Component {
 
     static navigationOptions = ({navigation}) => ({
         title: "Chat",
@@ -47,9 +47,7 @@ class Chat extends Component {
             </View>
         ),
         headerLeft: (
-            <TouchableOpacity
-                onPress={() => navigation.navigate('AuthenStackNav')}
-            >
+            <TouchableOpacity onPress={() => navigation.navigate('AuthenStackNav')}>
                 <Image source={icon_back} style={{height: 20, width: 20, marginLeft: 15}}/>
             </TouchableOpacity>
         )
@@ -350,5 +348,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(Chat);
-// export default Chat;
+export default connect(mapStateToProps)(ChatScreen);

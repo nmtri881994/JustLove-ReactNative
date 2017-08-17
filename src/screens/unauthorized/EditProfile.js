@@ -135,7 +135,6 @@ class EditProfile extends Component {
         });
     }
 
-
     // uploadAvatar() {
     //     AsyncStorageAccess.getFromStorage('@loginToken')
     //         .then(token => {

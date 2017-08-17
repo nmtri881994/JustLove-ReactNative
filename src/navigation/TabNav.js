@@ -3,47 +3,40 @@
  */
 import React from 'react';
 import {Dimensions} from 'react-native';
-import {TabNavigator, NavigationActions} from 'react-navigation';
+import {TabNavigator} from 'react-navigation';
 import Home from '../screens/authorized/Home';
-import ChatScreen from '../screens/authorized/ChatScreen';
-import Chat from '../screens/authorized/Chat/Chat';
+import Chat from '../screens/authorized/Chat';
 import Memories from '../screens/authorized/Memories';
 import Location from '../screens/authorized/Location';
 
 const {width, height} = Dimensions.get('window');
 
-let navigate;
-
 export default MainTabNav = TabNavigator({
-        HomeScreen: {
+        HomeTabView: {
             screen: Home,
             navigationOptions: {
-                tabBarLabel: 'My Love'
+                tabBarLabel: 'My Love',
             }
         },
-        ChatScreen: {
-            screen: ChatScreen,
+        ChatTabView: {
+            screen: Chat,
             navigationOptions: {
                 tabBarLabel: 'Chat',
             },
-
         },
-        MemoriesScreen: {
+        MemoriesTabView: {
             screen: Memories,
             navigationOptions: {
-                tabBarLabel: 'Memories'
+                tabBarLabel: 'Memories',
             }
         },
-        LocationScreen: {
+        LocationTabView: {
             screen: Location,
             navigationOptions: {
                 tabBarLabel: 'Location'
             }
         }
     }, {
-        // navigationOptions: ({navigation}) => {
-        //     navigate = navigation
-        // },
         tabBarOptions: {
             style: {
                 height: height / 20,
@@ -57,16 +50,6 @@ export default MainTabNav = TabNavigator({
             activeTintColor: '#fff',
             inactiveTintColor: '#AFEAF2',
             showLabel: true,
-            // onTabPress: (tab) => {
-            //     console.log('Tab', tab);
-            //     if (tab.route.routeName === 'ChatScreen') {
-            //         console.log('Hello');
-            //         let nav = NavigationActions.navigate({routeName: 'Chat'});
-            //         navigate.dispatch(nav);
-            //     }
-            // }
         },
-        swipeEnabled: true,
-
     }
 );

@@ -50,7 +50,6 @@ class Main extends Component {
                     content: 'audioCall',
                 })
             }
-<<<<<<< HEAD
             if(AppState.currentState === 'background') {
                 PushNotification.localNotification({
                     subText: this.props.target,
@@ -75,8 +74,6 @@ class Main extends Component {
                 console.log(this.props.user, 'new message from', this.props.target);
             }
         });
-=======
-        });
 
         this.props.socket.on('test-socket', (data) => {
             console.log(data);
@@ -84,8 +81,6 @@ class Main extends Component {
                 content: 'hello',
             });
         })
-
->>>>>>> 492837ff998fc44078b42adc9a71ec17e7d06143
     }
 
     render() {

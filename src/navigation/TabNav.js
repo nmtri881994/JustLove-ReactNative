@@ -4,10 +4,10 @@
 import React from 'react';
 import {Dimensions} from 'react-native';
 import {TabNavigator} from 'react-navigation';
-import Home from '../screens/authorized/Home';
-import Chat from '../screens/authorized/Chat';
-import Memories from '../screens/authorized/Memories';
-import Location from '../screens/authorized/Location';
+import Home from '../screens/authorized/Home/Home';
+import Chat from '../screens/authorized/Chat/Chat';
+import Memories from '../screens/authorized/Memories/Memories';
+import Location from '../screens/authorized/Location/LocationScreen';
 
 const {width, height} = Dimensions.get('window');
 

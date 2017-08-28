@@ -8,6 +8,7 @@ import ChatScreen from '../screens/authorized/Chat/ChatScreen';
 import Main from '../screens/authorized/Main';
 import DrawerMenu from "../components/DrawerMenu";
 import VideoCall from '../screens/authorized/Call/VideoCall';
+import CallHandle from '../screens/authorized/Call/CallHandle';
 import SearchFriend from '../components/SearchFriends';
 
 let {width} = Dimensions.get('window');
@@ -34,7 +35,7 @@ export const DrawerMenuNav = DrawerNavigator({
             }
         },
         VideoCall: {
-            screen: VideoCall
+            screen: CallHandle
         },
         SearchFriend: {
             screen: SearchFriend

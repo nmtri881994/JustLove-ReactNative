@@ -50,6 +50,7 @@ class Main extends Component {
                     content: 'audioCall',
                 })
             }
+<<<<<<< HEAD
             if(AppState.currentState === 'background') {
                 PushNotification.localNotification({
                     subText: this.props.target,
@@ -74,10 +75,27 @@ class Main extends Component {
                 console.log(this.props.user, 'new message from', this.props.target);
             }
         });
+=======
+        });
+
+        this.props.socket.on('test-socket', (data) => {
+            console.log(data);
+            this.props.socket.emit('Test-Socket', {
+                content: 'hello',
+            });
+        })
+
+>>>>>>> 492837ff998fc44078b42adc9a71ec17e7d06143
     }
 
     render() {
         const {wrapper, header, container} = styles;
+        // setInterval(() => {
+        //     console.log('send request');
+        //     this.props.socket.emit('Test-Socket', {
+        //         content: 'hello',
+        //     });
+        // }, 5000);
         return (
             <View style={wrapper}>
                 <View style={header}>
@@ -87,8 +105,6 @@ class Main extends Component {
                     <TabNav
                         screenProps={{navigate: this.props.navigation.navigate}}
                         onNavigationStateChange={(prevState, nextState) => {
-                            // console.log('_newState', nextState.index);
-                            // console.log('_lstState', prevState);
                             if (nextState.index === 1) {
                                 this.props.navigation.navigate('ChatScreen', {lastScreenIndex: prevState.index})
                             }

@@ -7,13 +7,13 @@ import {
     Image, StyleSheet, Dimensions, Modal, TouchableHighlight
 } from 'react-native';
 import {connect} from 'react-redux';
-import {AccessSocket} from '../../actions/Socket';
+import {AccessSocket} from '../../../actions/Socket';
 
-import background from '../../media/temp/home_background.jpg'
-import heart from '../../media/temp/heart.png';
-import AsyncStorageAccess from '../../api/AsyncStorageAccess';
-import addFriend from '../../media/icons/user.png';
-import addFriendWhite from '../../media/icons/addFriendWhite.png';
+import background from '../../../media/temp/home_background.jpg'
+import heart from '../../../media/temp/heart.png';
+import AsyncStorageAccess from '../../../api/AsyncStorageAccess';
+import addFriend from '../../../media/icons/user.png';
+import addFriendWhite from '../../../media/icons/addFriendWhite.png';
 
 
 const {width, height} = Dimensions.get('window');
@@ -25,7 +25,8 @@ class Home extends Component {
             requestFriendContent: '',
             targetId: '',
             modalVisible: false,
-        }
+        };
+        this.count = 0;
     }
 
     // componentWillMount() {
@@ -68,6 +69,13 @@ class Home extends Component {
                 <Text>{target.displayName}</Text>
             </View>
         );
+        // setInterval(() => {
+        //     console.log('send request');
+        //
+        //     this.props.socket.emit('Test-Socket', {
+        //         content: 'hello',
+        //     });
+        // }, 2000);
 
         const noFriendJSX = (
             <TouchableOpacity
@@ -139,10 +147,6 @@ class Home extends Component {
                         <Text style={status}> 12 gio : 23 phut : 34 giay</Text>
                         <Text style={status}>We will live together for life</Text>
                     </View>
-                    <TouchableOpacity
-                        onPress={this.logout.bind(this)}>
-                        <Text> log out</Text>
-                    </TouchableOpacity>
                 </Image>
             </View>
         );

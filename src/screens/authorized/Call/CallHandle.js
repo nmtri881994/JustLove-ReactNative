@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import {
     StyleSheet, Text, TouchableOpacity, View, Image,
-    TextInput, ListView, Platform, Modal, DeviceEventEmitter,
-    Dimensions, AppState,
+    Modal, DeviceEventEmitter, Dimensions, AppState,
 } from 'react-native';
 import InCallManager from 'react-native-incall-manager';
 import {connect} from 'react-redux';
@@ -16,6 +15,12 @@ import icon_AcceptCall from '../../../media/icons/receiveCall.png';
 import icon_CancelCall from '../../../media/icons/cancelCall.png';
 import icon_CancelVideo from '../../../media/icons/videoCallCancel.png';
 import icon_SwitchCamera from '../../../media/icons/switchCamera.png';
+import full_screen from '../../../media/icons/full-screen-arrows.png';
+import collage_screen from '../../../media/icons/icon_collage_screen.png';
+
+import AudioCallingScreen from './AudioCallingScreen';
+import VideoCallingScreenSmall from './VideoCallingScreenSmall';
+import VideoCallingScreenFull from './VideoCallingScreenFull';
 
 const {width, height} = Dimensions.get('window');
 
@@ -25,7 +30,7 @@ let configuration = {
 let pc;
 let con;
 let localStream;
-class VideoCall extends Component {
+class CallHandle extends Component {
     static navigationOptions = {
         header: null
     };
@@ -39,14 +44,15 @@ class VideoCall extends Component {
             remoteId: this.props.user.target.targetId,
             frontCamera: true,
             mute: false,
+            isFullScreen: false,
             modalVisible: this.props.navigation.state.params.type !== 'caller',
             modalCallerVisible: this.props.navigation.state.params.type === 'caller',
         };
-        this.UserIds = {
+        con = this;
+        con.UserIds = {
             senderId: this.props.user._id,
             receiverId: this.props.user.target.targetId
         };
-        con = this;
         con.socket = this.props.socket;
         con.socket.on('data', (data) => {
             switch (data.type) {
@@ -113,13 +119,13 @@ class VideoCall extends Component {
             if (con.video) {
                 con.socket.emit('incomingCall', {
                     type: 'videoCall',
-                    UserIds:this.UserIds
+                    UserIds: con.UserIds
                 });
             }
             else {
                 con.socket.emit('incomingCall', {
                     type: 'audioCall',
-                    UserIds:this.UserIds
+                    UserIds: con.UserIds
                 });
             }
             con.socket.on('incomingAns', (data) => {
@@ -130,7 +136,7 @@ class VideoCall extends Component {
                     }
                 }
                 else if (data.content === 'refuse') {
-                    con.handleLeave();
+                    con.props.navigation.goBack();
                 }
                 con.setState({modalCallerVisible: false});
             });
@@ -140,13 +146,13 @@ class VideoCall extends Component {
             setTimeout(() => {
                 if (con.accept === null) {
                     con.socket.emit('incomingAns', {
-                        UserIds:this.UserIds,
+                        UserIds: con.UserIds,
                         content: 'refuse',
                     });
                     InCallManager.stopRingtone();
-                    con.handleLeave();
+                    con.props.navigation.goBack();
                 }
-            }, 10000)
+            }, 20000)
         }
         AppState.addEventListener('change', con.handleAppStateChange);
     }
@@ -155,11 +161,13 @@ class VideoCall extends Component {
         if (nextAppState === 'background' || nextAppState === 'inactive') {
             con.socket.emit('data', {
                 type: 'leave',
+                sender: con.state.localId,
+                receiver: con.state.remoteId,
             });
             con.handleLeave();
         }
     }
-    //
+
     componentWillUnmount() {
         if (!con.state.frontCamera) {
             localStream.getVideoTracks().forEach(videoTracks => videoTracks._switchCamera());
@@ -170,6 +178,10 @@ class VideoCall extends Component {
             localId: null,
             remoteId: null,
         });
+        con.UserIds = {
+            senderId: null,
+            receiverId: null
+        };
         pc.close();
         pc.onicecandidate = null;
         pc.onaddstream = null;
@@ -196,8 +208,9 @@ class VideoCall extends Component {
                 if (e.candidate) {
                     con.socket.emit('data', {
                         type: "candidate",
+                        UserIds: con.UserIds,
                         candidate: e.candidate,
-                        UserIds:this.UserIds
+
                     });
                 }
             };
@@ -211,16 +224,16 @@ class VideoCall extends Component {
             con.accept = true;
             con.socket.emit('incomingAns', {
                 content: 'accept',
-                UserIds:this.UserIds
+                UserIds: con.UserIds
             });
         }
         else {
             con.accept = false;
             con.socket.emit('incomingAns', {
                 content: 'refuse',
-                UserIds:this.UserIds
+                UserIds: con.UserIds
             });
-            con.handleLeave();
+            con.props.navigation.goBack();
         }
     }
 
@@ -235,8 +248,8 @@ class VideoCall extends Component {
             }, logError);
             con.socket.emit('data', {
                 type: "answer",
-                UserIds:this.UserIds,
-                answer: answer
+                answer: answer,
+                UserIds: con.UserIds
             });
         }, logError);
     }
@@ -254,6 +267,10 @@ class VideoCall extends Component {
     }
 
     handleLeave() {
+        con.socket.emit('data', {
+            type: 'leave',
+            UserIds: con.UserIds
+        });
         con.props.navigation.goBack();
     }
 
@@ -261,8 +278,9 @@ class VideoCall extends Component {
         pc.createOffer(function (offer) {
             con.socket.emit('data', {
                 type: "offer",
-                UserIds:this.UserIds,
-                offer: offer
+                UserIds: con.UserIds,
+                offer: offer,
+
             });
 
             pc.setLocalDescription(offer, () => {
@@ -271,56 +289,88 @@ class VideoCall extends Component {
         }, logError);
     }
 
-    switchCameraOrSound(change) {
-        let frontCamera = con.state.frontCamera;
-        let mute = con.state.mute;
-        if (change === 'camera') {
-            frontCamera = !con.state.frontCamera;
-            con.setState({frontCamera});
-            localStream.getVideoTracks().forEach(videoTracks => videoTracks._switchCamera());
-        }
-        else if (change === 'sound') {
-            mute = !con.state.mute;
-            con.setState({mute});
-            localStream.getAudioTracks().forEach(audioTrack => audioTrack.enabled = !mute);
-        }
+    // switchCamera() {
+    //     con.setState({frontCamera: !con.state.frontCamera});
+    //     localStream.getVideoTracks().forEach(videoTracks => videoTracks._switchCamera());
+    // }
+
+    mutedSound() {
+        let {mute} = con.state;
+        con.setState({mute: !con.state.mute});
+        localStream.getAudioTracks().forEach(audioTrack => audioTrack.enabled = mute);
+    }
+
+    volumeOut() {
+
     }
 
     render() {
-        const {wrapper, modalWrapper, modalContent, row, phoneBtn, btnView, videoCallView} = styles;
+        const {
+            modalWrapper, modalContent, row, videoOptionsFull, localRTCView,
+            phoneBtn, imageStyle, videoOptions, VideoView, videoCallView, btnView
+        } = styles;
+        const {wrapper, RTCViewStyle} = styles;
+        const VideoCallJSX = (
+            con.state.isFullScreen ?
+                <VideoCallingScreenFull
+                    RTCView={
+                        <View style={VideoView}>
+                            <RTCView streamURL={con.state.remoteVideo} style={RTCViewStyle}/>
+                            <RTCView streamURL={con.state.localVideo} style={localRTCView}/>
+                            <View style={videoOptionsFull}>
+                                <TouchableOpacity>
+                                    <Image source={icon_SwitchCamera} style={imageStyle}/>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    onPress={() => this.setState({isFullScreen: false})}
+                                >
+                                    <Image source={collage_screen} style={imageStyle}/>
+                                </TouchableOpacity>
 
-        let displaySound = con.state.mute ? 'Mute Off' : 'Mute On';
+                            </View>
+                        </View>
+                    }
+                    muted={con.mutedSound.bind(this)}
+                    volumeOut={con.volumeOut.bind(this)}
+                    hangup={con.handleLeave.bind(this)}
+
+                />
+                : <VideoCallingScreenSmall
+                RTCView={
+                    <View style={VideoView}>
+                        <RTCView streamURL={con.state.remoteVideo} style={RTCViewStyle}/>
+                        <View style={videoOptions}>
+                            <TouchableOpacity
+                            >
+                                <Image source={icon_SwitchCamera} style={imageStyle}/>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                onPress={() => this.setState({isFullScreen: true})}
+                            >
+                                <Image source={full_screen} style={imageStyle}/>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                }
+                muted={con.mutedSound.bind(this)}
+                volumeOut={con.volumeOut.bind(this)}
+                hangup={con.handleLeave.bind(this)}
+
+            />
+        );
+        const AudioCallJSX = (
+            <AudioCallingScreen
+                muted={con.mutedSound.bind(this)}
+                volumeOut={con.volumeOut.bind(this)}
+                hangup={con.handleLeave.bind(this)}
+            />
+        );
+
+        const mainJSX = con.video === true ? VideoCallJSX : AudioCallJSX;
+
         return (
-            <View style={wrapper}>
-                <View style={videoCallView}>
-                    <RTCView streamURL={con.state.remoteVideo} style={styles.remoteView}/>
-                    <RTCView streamURL={con.state.localVideo} style={styles.selfView}/>
-                </View>
-                <View style={btnView}>
-                    <TouchableOpacity
-                        style={{marginLeft: 10}}
-                        onPress={() => con.switchCameraOrSound('camera')}
-                    >
-                        <Image source={icon_SwitchCamera} style={{width: 25, height: 25}}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        onPress={() => {
-                            con.socket.emit('data', {
-                                type: 'leave',
-                                UserIds:this.UserIds
-                            });
-                            con.handleLeave();
-                        }}
-                    >
-                        <Image source={icon_CancelVideo} style={{width: 40, height: 40}}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={{backgroundColor: 'green', margin: 5}}
-                        onPress={() => con.switchCameraOrSound('sound')}
-                    >
-                        <Text style={{padding: 5}}>{displaySound}</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style={{flex: 1}}>
+                {mainJSX}
                 <Modal
                     animationType={"slide"}
                     transparent={false}
@@ -360,17 +410,10 @@ class VideoCall extends Component {
                             <Text style={styles.headerModal}>Calling</Text>
                             <View style={row}>
                                 <TouchableOpacity
-                                    onPress={() => {
-                                        con.socket.emit('data', {
-                                            type: 'leave',
-                                            UserIds:this.UserIds
-                                        });
-                                        con.handleLeave();
-                                    }}
+                                    onPress={() => con.handleLeave()}
                                 >
                                     <Image source={icon_CancelVideo} style={phoneBtn}/>
                                 </TouchableOpacity>
-
                                 <Image source={icon_AcceptCall} style={phoneBtn}/>
                             </View>
                         </View>
@@ -382,21 +425,12 @@ class VideoCall extends Component {
 }
 
 const styles = StyleSheet.create({
-    wrapper: {
+    VideoView: {
         flex: 1,
-        backgroundColor: '#2D2E29',
-        alignItems: 'stretch'
-    },
-    selfView: {
-        alignSelf: 'flex-end',
-        width: 100,
-        height: 100,
-        position: 'absolute',
     },
     videoCallView: {
         justifyContent: 'flex-end',
         flex: 8,
-        backgroundColor: 'gray',
         marginHorizontal: 5
     },
     remoteView: {
@@ -409,6 +443,17 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginHorizontal: 10,
+    },
+    RTCViewStyle: {
+        flex: 1,
+    },
+    localRTCView: {
+        marginTop: 10,
+        width: 100,
+        height: 100,
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        marginRight: 10
     },
     buttonsModal: {
         flexDirection: 'row',
@@ -430,11 +475,6 @@ const styles = StyleSheet.create({
         height: height / 2,
         borderRadius: 10
     },
-    phoneBtn: {
-        width: 50,
-        height: 50
-    },
-
     headerModal: {
         color: '#fff',
         fontSize: 20,
@@ -446,7 +486,30 @@ const styles = StyleSheet.create({
         marginTop: 40,
         justifyContent: 'space-around',
         paddingHorizontal: 10
+    },
+    phoneBtn: {
+        width: 50,
+        height: 50
+    },
+
+    imageStyle: {
+        width: 25,
+        height: 25,
+        marginTop: 10
+    },
+    videoOptions: {
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        marginTop: height * 0.6 - 130,
+        paddingRight: 10,
+    },
+    videoOptionsFull: {
+        marginTop: height - 180,
+        position: 'absolute',
+        alignSelf: 'flex-end',
+        paddingRight: 10,
     }
+
 });
 
 function mapStateToProps(state) {
@@ -457,38 +520,5 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(VideoCall);
-// export default VideoCall;
-
-
-/*
- <TouchableOpacity
- style={{backgroundColor: 'green', margin: 5}}
- onPress={() => {
- con.changeQuality('low')
- }}
- >
- <Text style={{padding: 5}}>Low Quality</Text>
- </TouchableOpacity>
- <TouchableOpacity
- style={{backgroundColor: 'green', margin: 5}}
- onPress={() => {
- con.changeQuality('high')
- }}
- >
- <Text style={{padding: 5}}>High Quality</Text>
- </TouchableOpacity>
- changeQuality(qual) {
- con.setState({qual: qual});
- GetLocalStream(con.state.frontCamera, qual, (stream) => {
- if (localStream) {
- pc.removeStream(localStream);
- localStream.release();
- }
- localStream = stream;
- con.setState({localVideo: stream.toURL()});
- pc.addStream(stream);
- con.sendOffer();
- });
- }
- */
+export default connect(mapStateToProps)(CallHandle);
+// export default CallHandle;

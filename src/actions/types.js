@@ -8,3 +8,4 @@ export const LOGIN = 'LOGIN';
 export const SOCKET = 'SOCKET';
 
 export const CHATSCREEN = 'CHATSCREEN';
+export const GET_SCREEN = 'GET_SCREEN';

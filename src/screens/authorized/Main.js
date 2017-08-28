@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {
     View, Text, Dimensions,
-    StyleSheet
+    StyleSheet, AppState
 } from 'react-native';
 import Header from "../../components/Header";
 import TabNav from '../../navigation/TabNav';
@@ -21,6 +21,22 @@ class Main extends Component {
     }
 
     componentDidMount() {
+        PushNotification.configure({
+            onRegister: function(token) {
+                console.log( 'TOKEN:', token );
+            },
+            onNotification: function(notification) {
+                console.log( 'NOTIFICATION:', notification );
+            },
+            permissions: {
+                alert: true,
+                badge: true,
+                sound: true
+            },
+            popInitialNotification: false,
+            requestPermissions: true,
+        });
+
         this.props.socket.on('incomingCall', (data) => {
             if (data.type === 'videoCall') {
                 this.props.navigation.navigate('VideoCall', {
@@ -34,7 +50,30 @@ class Main extends Component {
                     content: 'audioCall',
                 })
             }
+            if(AppState.currentState === 'background') {
+                PushNotification.localNotification({
+                    subText: this.props.target,
+                    message: 'Incoming Call',
+                    autoCancel: false,
+                });
+            }
         })
+
+        this.props.socket.on('message', (data) => {
+            if(AppState.currentState === 'background') {
+                if(this.props.screen !== 'ChatScreen') {
+                    this.props.navigation.navigate('ChatScreen');
+                }
+                PushNotification.localNotification({
+                    subText: this.props.target,
+                    message: data.text,
+                    autoCancel: false,
+                });
+            }
+            else if (AppState.currentState === 'active') {
+                console.log(this.props.user, 'new message from', this.props.target);
+            }
+        });
     }
 
     render() {
@@ -78,6 +117,7 @@ function mapStateToProps(state) {
         user: state.authentication.user,
         target: state.authentication.target,
         socket: state.socket.socket,
+        screen: state.navigation.screen,
     }
 }
 

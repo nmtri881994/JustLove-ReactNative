@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import TabNav from '../../navigation/TabNav';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation'
+import {getScreen} from '../../actions/GetScreen'
 import PushNotification from 'react-native-push-notification';
 const {width, height} = Dimensions.get('window');
 
@@ -102,13 +103,21 @@ class Main extends Component {
                         screenProps={{navigate: this.props.navigation.navigate}}
                         onNavigationStateChange={(prevState, nextState) => {
                             if (nextState.index === 1) {
-                                this.props.navigation.navigate('ChatScreen', {lastScreenIndex: prevState.index})
+                                this._getCurrentRouteName(newState);
+                                this.props.navigation.navigate('ChatScreen', {lastScreenIndex: prevState.index});
                             }
                         }}
                     />
                 </View>
             </View>
         );
+    }
+    _getCurrentRouteName(navState) {
+        if (navState.hasOwnProperty('index')) {
+            this._getCurrentRouteName(navState.routes[navState.index]);
+        } else {
+            this.props.getScreen(navState.routeName);
+        }
     }
 }
 
@@ -133,4 +142,4 @@ function mapStateToProps(state) {
     }
 }
 
-export default connect(mapStateToProps)(Main);
+export default connect(mapStateToProps, {getScreen})(Main);

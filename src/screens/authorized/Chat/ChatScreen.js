@@ -80,7 +80,7 @@ class ChatScreen extends Component {
         this.onInputTextChanged = this.onInputTextChanged.bind(this);
         this.renderChatFooterCustom = this.renderChatFooterCustom.bind(this);
         this.onLoadEarlier = this.onLoadEarlier.bind(this);
-        this.socket.removeListener('ReceiveMessage');
+        //this.socket.removeListener('ReceiveMessage');
         this.socket.removeListener('LoadMessages');
         this.socket.on('ReceiveMessage', this.onReceivedMessage);
         this.socket.on('LoadMessages', this.LoadMessages);
@@ -122,6 +122,7 @@ class ChatScreen extends Component {
         Keyboard.dismiss();
         this.keyboardDidShowListener.remove();
         this.socket.removeListener('IsTyping');
+        this.socket.removeListener('ReceiveMessage', this.onReceivedMessage);
     }
 
     LoadMessages(existingMessages) {

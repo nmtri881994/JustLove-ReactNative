@@ -61,7 +61,7 @@ class Main extends Component {
             }
         });
 
-        this.props.socket.on('message', (data) => {
+        this.props.socket.on('ReceiveMessage', (data) => {
             if(AppState.currentState === 'background') {
                 if(this.props.screen !== 'ChatScreen') {
                     this.props.navigation.navigate('ChatScreen');
@@ -103,7 +103,7 @@ class Main extends Component {
                         screenProps={{navigate: this.props.navigation.navigate}}
                         onNavigationStateChange={(prevState, nextState) => {
                             if (nextState.index === 1) {
-                                this._getCurrentRouteName(newState);
+                                this._getCurrentRouteName(nextState);
                                 this.props.navigation.navigate('ChatScreen', {lastScreenIndex: prevState.index});
                             }
                         }}

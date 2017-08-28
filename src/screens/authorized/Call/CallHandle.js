@@ -46,7 +46,7 @@ class CallHandle extends Component {
             mute: false,
             isFullScreen: false,
             modalVisible: this.props.navigation.state.params.type !== 'caller',
-            modalCallerVisible: this.props.navigation.state.params.type === 'caller',
+            // modalCallerVisible: this.props.navigation.state.params.type === 'caller',
         };
         con = this;
         con.UserIds = {
@@ -128,6 +128,7 @@ class CallHandle extends Component {
                     UserIds: con.UserIds
                 });
             }
+            con.incomingAns = false;
             con.socket.on('incomingAns', (data) => {
                 if (data.content === 'accept') {
                     if (!con.isOffer) {
@@ -138,8 +139,14 @@ class CallHandle extends Component {
                 else if (data.content === 'refuse') {
                     con.props.navigation.goBack();
                 }
-                con.setState({modalCallerVisible: false});
+                con.incomingAns = true;
+                // con.setState({modalCallerVisible: false});
             });
+            setTimeout(() => {
+                if(!con.incomingAns) {
+                    con.props.navigation.goBack();
+                }
+            }, 21000);
         }
         else if (con.props.navigation.state.params.type === 'callee') {
             InCallManager.startRingtone('_BUNDLE_');
@@ -169,6 +176,7 @@ class CallHandle extends Component {
     }
 
     componentWillUnmount() {
+        InCallManager.stopRingtone();
         if (!con.state.frontCamera) {
             localStream.getVideoTracks().forEach(videoTracks => videoTracks._switchCamera());
         }
@@ -397,7 +405,7 @@ class CallHandle extends Component {
                         </View>
                     </View>
                 </Modal>
-                <Modal
+                {/* <Modal
                     animationType={"slide"}
                     transparent={false}
                     visible={con.state.modalCallerVisible}
@@ -418,7 +426,7 @@ class CallHandle extends Component {
                             </View>
                         </View>
                     </View>
-                </Modal>
+                </Modal> */}
             </View>
         );
     }

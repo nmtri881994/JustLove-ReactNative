@@ -7,6 +7,7 @@ import Header from "../../components/Header";
 import TabNav from '../../navigation/TabNav';
 import {connect} from 'react-redux';
 import {NavigationActions} from 'react-navigation'
+import PushNotification from 'react-native-push-notification';
 const {width, height} = Dimensions.get('window');
 
 
@@ -57,7 +58,7 @@ class Main extends Component {
                     autoCancel: false,
                 });
             }
-        })
+        });
 
         this.props.socket.on('message', (data) => {
             if(AppState.currentState === 'background') {
@@ -80,7 +81,7 @@ class Main extends Component {
             this.props.socket.emit('Test-Socket', {
                 content: 'hello',
             });
-        })
+        });
     }
 
     render() {

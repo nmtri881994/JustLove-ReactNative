@@ -64,13 +64,21 @@ class ChatScreen extends Component {
             emoji: false,
             gify: false,
         };
+        this.userChat = {
+            _id: this.props.user._id,
+            name: this.props.user.displayName,
+            avatar: this.props.user.avatar,
+        };
+        this.UserIds = {
+            senderId: this.props.user._id,
+            receiverId: this.props.user.target.targetId
+        };
         this.socket = this.props.socket;
         this.onReceivedMessage = this.onReceivedMessage.bind(this);
         this.onSend = this.onSend.bind(this);
         this.storeMessages = this.storeMessages.bind(this);
         this.onInputTextChanged = this.onInputTextChanged.bind(this);
         this.renderChatFooterCustom = this.renderChatFooterCustom.bind(this);
-        this.renderFooter = this.renderFooter.bind(this);
         this.onLoadEarlier = this.onLoadEarlier.bind(this);
         this.socket.removeListener('ReceiveMessage');
         this.socket.removeListener('LoadMessages');
@@ -87,11 +95,13 @@ class ChatScreen extends Component {
     componentDidMount() {
         this.socket.emit('LoadMessages', {
             messagesPage: this.messagesPage,
+            UserIds: this.UserIds,
         });
         this.keyboardDidShowListener = Keyboard.addListener('keyboardDidShow', () => {
             this.setState({emoji: false, gify: false});
         });
         this.socket.on('IsTyping', (isTyping) => {
+            console.log('typing re', isTyping);
             if (this._isMounted) {
                 this.setState((previousState) => {
                     return {
@@ -107,15 +117,14 @@ class ChatScreen extends Component {
         this._isMounted = false;
         this.socket.emit('IsTyping', {
             isTyping: false,
+            UserIds: this.UserIds,
         });
         Keyboard.dismiss();
         this.keyboardDidShowListener.remove();
         this.socket.removeListener('IsTyping');
-        //   this.props.navigation.navigate('AuthenStackNav')
     }
 
     LoadMessages(existingMessages) {
-        console.log('existingMessages', existingMessages);
         if (existingMessages.length < 20) {
             this.setState({loadEarlier: false});
         }
@@ -138,21 +147,23 @@ class ChatScreen extends Component {
         this.messagesPage++;
         this.socket.emit('LoadMessages', {
             messagesPage: this.messagesPage,
+            UserIds: this.UserIds,
         });
     }
 
     onReceivedMessage(messages) {
-        console.log("message", messages);
         if (this._isMounted === true) {
             this.storeMessages(messages);
         }
     }
 
     onSend(messages = []) {
+        messages[0].receiveId = this.props.user.target.targetId;
         this.socket.emit('SendMessage', messages[0]);
         this.storeMessages(messages[0]);
         this.setState({text: ''});
     }
+
 
     onInputTextChanged(txt) {
         this.setState({text: txt});
@@ -160,38 +171,16 @@ class ChatScreen extends Component {
             this.isTypingState = true;
             this.socket.emit('IsTyping', {
                 isTyping: true,
+                UserIds: this.UserIds,
             });
         }
         if (txt === '') {
             this.isTypingState = false;
             this.socket.emit('IsTyping', {
                 isTyping: false,
+                UserIds: this.UserIds,
             });
         }
-    }
-
-    renderFooter(props) {
-        console.log('isTyping', this.state.isTyping);
-        if (this.state.isTyping) {
-            return (
-                <View style={{flexDirection: 'row'}}>
-                    <Image
-                        style={{
-                            marginHorizontal: 8,
-                            marginBottom: 15,
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            width: 40,
-                            height: 40,
-                            borderRadius: 20
-                        }}
-                        source={{uri: this.props.target.avatar}}
-                    />
-                    <Image source={icon_Typing} style={{height: 40, width: 60}}/>
-                </View>
-            );
-        }
-        return null;
     }
 
     storeMessages(messages) {
@@ -205,6 +194,26 @@ class ChatScreen extends Component {
 
     }
 
+    renderFooter() {
+        console.log('isTyping renderFooter', this.state.isTyping);
+        if (this.state.isTyping) {
+            return (
+                <View style={{flexDirection: 'row', marginBottom: 15}}>
+                    <Image
+                        style={{
+                            marginLeft: 8,
+                            justifyContent: 'center', alignItems: 'center',
+                            width: 40, height: 40, borderRadius: 20
+                        }}
+                        source={{uri: this.props.target.avatar}}
+                    />
+                    <Image source={icon_Typing} style={{height: 40, width: 80}}/>
+                </View>
+            );
+        }
+        return null;
+    }
+
     logEmoji(emoji) {
         this.setState({text: this.state.text.concat(emoji)});
     }
@@ -216,7 +225,7 @@ class ChatScreen extends Component {
                 type: 'require',
                 content: gify,
             },
-            user: this.props.user,
+            user: this.userChat,
             createdAt: new Date(),
             _id: uuid.v4(),
         };
@@ -260,7 +269,7 @@ class ChatScreen extends Component {
                     content: image.uri,
                 },
                 imageData: image.data,
-                user: this.props.user,
+                user: this.userChat,
                 createdAt: new Date(),
                 _id: uuid.v4(),
             };
@@ -268,7 +277,7 @@ class ChatScreen extends Component {
         });
     }
 
-    renderChatFooterCustom(props) {
+    renderChatFooterCustom() {
         const emoji = () => {
             Keyboard.dismiss();
             if (this.state.gify) {
@@ -283,7 +292,6 @@ class ChatScreen extends Component {
             }
             this.setState({gify: !this.state.gify});
         };
-        // const image = () => this.sendImage.bind(this);
         return (
             <CustomActions
                 image={ this.sendImage.bind(this)}
@@ -296,12 +304,7 @@ class ChatScreen extends Component {
 
     render() {
 
-        const {user} = this.props;
-        let userChat = {
-            _id: user._id,
-            name: user.displayName,
-            avatar: user.avatar
-        };
+        console.log('typing', this.state.isTyping);
 
         let displayemoji = this.state.emoji ?
             <EmojiPicker
@@ -323,13 +326,13 @@ class ChatScreen extends Component {
                     text={this.state.text}
                     messages={this.state.messages}
                     onSend={this.onSend}
-                    user={userChat}
+                    user={this.userChat}
                     loadEarlier={this.state.loadEarlier}
                     onLoadEarlier={this.onLoadEarlier}
                     isLoadingEarlier={this.state.isLoadingEarlier}
+                    renderFooter={this.renderFooter.bind(this)}
                     onInputTextChanged={this.onInputTextChanged}
                     renderChatFooter={this.renderChatFooterCustom}
-                    renderFooter={this.renderFooter}
                     keyboardShouldPersistTaps={'never'}
                     showUserAvatar={true}
                 />

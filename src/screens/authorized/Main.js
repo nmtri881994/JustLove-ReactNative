@@ -34,11 +34,25 @@ class Main extends Component {
                     content: 'audioCall',
                 })
             }
+        });
+
+        this.props.socket.on('test-socket', (data) => {
+            console.log(data);
+            this.props.socket.emit('Test-Socket', {
+                content: 'hello',
+            });
         })
+
     }
 
     render() {
         const {wrapper, header, container} = styles;
+        // setInterval(() => {
+        //     console.log('send request');
+        //     this.props.socket.emit('Test-Socket', {
+        //         content: 'hello',
+        //     });
+        // }, 5000);
         return (
             <View style={wrapper}>
                 <View style={header}>
@@ -48,8 +62,6 @@ class Main extends Component {
                     <TabNav
                         screenProps={{navigate: this.props.navigation.navigate}}
                         onNavigationStateChange={(prevState, nextState) => {
-                            // console.log('_newState', nextState.index);
-                            // console.log('_lstState', prevState);
                             if (nextState.index === 1) {
                                 this.props.navigation.navigate('ChatScreen', {lastScreenIndex: prevState.index})
                             }

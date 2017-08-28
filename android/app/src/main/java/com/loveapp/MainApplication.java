@@ -3,6 +3,7 @@ package com.loveapp;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+import com.airbnb.android.react.maps.MapsPackage;
 import com.oney.WebRTCModule.WebRTCModulePackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.zxcpoiu.incallmanager.InCallManagerPackage;
@@ -27,6 +28,7 @@ public class MainApplication extends Application implements ReactApplication {
     protected List<ReactPackage> getPackages() {
       return Arrays.<ReactPackage>asList(
           new MainReactPackage(),
+            new MapsPackage(),
             new WebRTCModulePackage(),
             new VectorIconsPackage(),
             new InCallManagerPackage(),

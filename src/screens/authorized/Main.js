@@ -36,7 +36,8 @@ class Main extends Component {
                 </View>
                 <View style={container}>
                     <TabNav
-                        screenProps={{navigate: this.props.navigation.navigate}}/>
+                        screenProps={{navigate: this.props.navigation.navigate, navigation: this.props.navigation}}
+                    />
                 </View>
 
             </View>

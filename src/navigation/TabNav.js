@@ -28,9 +28,9 @@ export default MainTabNav = TabNavigator({
         },
         MemoriesScreen: {
             screen: Memories,
-            navigationOptions: {
-                tabBarLabel: 'Memories'
-            }
+            navigationOptions: ({navigation}) => ({
+                tabBarLabel: 'Kỉ niệm',
+            }),
         },
         LocationScreen: {
             screen: Location,

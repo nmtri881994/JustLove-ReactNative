@@ -3,7 +3,7 @@
  */
 import React, {Component} from 'react';
 import {
-    View, Text, Image,
+    View, Text, Image, TouchableOpacity,
     Dimensions, StyleSheet
 } from 'react-native';
 import icon_menu from '../media/icons/ic_menu.png';
@@ -12,14 +12,16 @@ const {width, height} = Dimensions.get('window');
 const iconSize = height / 13 * 0.6;
 
 class Header extends Component {
-
     render() {
-
         const {wrapper, imageStyle, title} = styles;
 
         return (
             <View style={wrapper}>
-                <Image source={icon_menu} style={imageStyle}/>
+                <TouchableOpacity
+                    onPress={() => this.props.navigation.navigate('DrawerOpen')}
+                >
+                    <Image source={icon_menu} style={imageStyle}/>
+                </TouchableOpacity>
                 <Text style={title}>My Love</Text>
             </View>
         );

@@ -8,7 +8,7 @@ import {
     Image,
 } from 'react-native'
 
-import Gifs from '../../img/Gifs.js'
+import Gifs from './Gifs.js'
 
 /* list of emoji's sourced from http://getemoji.com */
 
@@ -70,10 +70,9 @@ export default class extends React.Component {
                     }}>
                     <Image
                         style={{width: 40, height: 40, marginBottom: 10, marginLeft: 10}}
-                        source={require('../../img/sticker/tuzki-icon.png')}
+                        source={require('../../../media/sticker/tuzki-icon.png')}
                     />
                 </TouchableOpacity>
-
                 <TouchableOpacity
                     selected={gifyCategory === 'NUANIA'}
                     onPress={() => {
@@ -81,10 +80,9 @@ export default class extends React.Component {
                     }}>
                     <Image
                         style={{width: 40, height: 40, marginBottom: 10, marginLeft: 10}}
-                        source={require('../../img/sticker/NuaNia1.png')}
+                        source={require('../../../media/sticker/NuaNia1.png')}
                     />
                 </TouchableOpacity>
-
             </Tabs>
         )
     }
@@ -97,9 +95,7 @@ export default class extends React.Component {
                 <View style={{flex: 0.3}}>
                     {this.renderTabs()}
                 </View>
-
                 <ScrollView>
-
                     <GifyWrapper>
                         {
                             gifys.map((gify, index) => (

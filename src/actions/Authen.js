@@ -21,3 +21,14 @@ export const loginSuccess = (user, token, target) => {
         dispatch(navigateAction);
     }
 };
+
+export const logout = () => {
+    return (dispatch) => {
+        AsyncStorageAccess.saveToStorage('@loginToken', '');
+        AsyncStorageAccess.saveToStorage('@user', '');
+        const navigateAction = NavigationActions.navigate({
+            routeName: 'UnauthenStackNav',
+        });
+        dispatch(navigateAction);
+    }
+};

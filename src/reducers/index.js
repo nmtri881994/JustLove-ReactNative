@@ -5,6 +5,8 @@ import Socket from './SocketIO';
 import MemoriesReducer from './MemoriesReducer'
 import RemidersReducer from './RemidersReducer'
 import remindersType1Reducer from './RemidersType1Reducer'
+import GetScreen from './GetScreen';
+
 
 export default combineReducers({
     nav: RootNavigator,
@@ -13,4 +15,5 @@ export default combineReducers({
     memories: MemoriesReducer,
     reminders: RemidersReducer,
     remindersType1: remindersType1Reducer
+    navigation: GetScreen,
 });
